@@ -14,6 +14,6 @@
 
 ```
 make
-./create_spectrogram [folder audios]
+./create_spectrogram [data folder] for example ./create_spectrogram ESC-50-master
 ```
 
