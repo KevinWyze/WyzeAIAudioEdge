@@ -26,10 +26,9 @@ def prepare_data(data, train):
 
 
 def write_label(data):
-    data = pd.read_csv(data_file)
     unique_labels = np.unique(data.category)
-    f = open('labels.txt', 'a')
-    f.writelines("{}\n".format(label for label in unique_labels))
+    with open('labels.txt','w') as f:
+        f.write('\n'.join(unique_labels))
     f.close()
 
 
