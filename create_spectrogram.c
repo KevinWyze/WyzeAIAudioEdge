@@ -725,15 +725,12 @@ int main
     char **av
     )
 {
-    if (ac != 4)
+    if (ac != 2)
         {
-        printf("usage: ./create_spectrogram [folder UrbanSound] [folder ESC-50] [folder building_106_kitchen/building_106_kitchen]\n");
+        printf("usage: ./create_spectrogram [folder_directory]\n");
         return 0;
         }
-    char *urbansound_folder = av[1];
-    char *esc50_folder = av[2];
-    char *building_106_kitchen_folder = av[3];
-    printf("check\n");
+    char *data_folder = av[1];
     char textbuf[256];
     char pngname[256];
     // renderer for spectrogram
@@ -747,8 +744,8 @@ int main
         SPEC_FLOOR_DB
         };
 
-    // open urbansound dog_bark clip folder
-    sprintf(textbuf, "%s/graph/positive", urbansound_folder);
+    // open audio clip folder
+    sprintf(textbuf, "%s/audios", data_folder);
     DIR *dp = opendir(textbuf);
     struct dirent *files;
     int textlen = 0;
@@ -763,8 +760,8 @@ int main
         textlen = strlen(filename);
         if (strcmp(".wav", filename + textlen - 4) == 0)
             {
-            sprintf(textbuf, "%s/graph/positive/%s", urbansound_folder, filename);
-            strcpy(pngname, textbuf);
+            sprintf(textbuf, "%s/audios/%s", data_folder, filename);
+            sprintf(pngname, "%s/images/%s", data_folder, filename);
             textlen = strlen(pngname);
             pngname[textlen - 3] = 'p';
             pngname[textlen - 2] = 'n';
@@ -777,205 +774,5 @@ int main
         }
 
     closedir(dp);
-
-    // open urbansound other clip folder
-    sprintf(textbuf, "%s/graph/negative", urbansound_folder);
-    dp = opendir(textbuf);
-    while ((files = readdir(dp)) != NULL)
-        {
-        char *filename = files->d_name;
-        if(!strcmp(filename, ".") || !strcmp(filename, ".."))
-            {
-            continue;
-            }
-        textlen = strlen(filename);
-        if (strcmp(".wav", filename + textlen - 4) == 0)
-            {
-            sprintf(textbuf, "%s/graph/negative/%s", urbansound_folder, filename);
-            strcpy(pngname, textbuf);
-            textlen = strlen(pngname);
-            pngname[textlen - 3] = 'p';
-            pngname[textlen - 2] = 'n';
-            pngname[textlen - 1] = 'g';
-            printf("%s\n", pngname);
-            render.sndfilepath = textbuf;
-            render.pngfilepath = pngname;
-            render_sndfile (&render) ;
-            }
-        }
-    closedir(dp);
-
-
-
-    // open building_106_kitchen other clip folder
-    sprintf(textbuf, "%s/graph/negative", building_106_kitchen_folder);
-    dp = opendir(textbuf);
-    while ((files = readdir(dp)) != NULL)
-        {
-        char *filename = files->d_name;
-        if(!strcmp(filename, ".") || !strcmp(filename, ".."))
-            {
-            continue;
-            }
-        textlen = strlen(filename);
-        if (strcmp(".wav", filename + textlen - 4) == 0)
-            {
-            sprintf(textbuf, "%s/graph/negative/%s", building_106_kitchen_folder, filename);
-            strcpy(pngname, textbuf);
-            textlen = strlen(pngname);
-            pngname[textlen - 3] = 'p';
-            pngname[textlen - 2] = 'n';
-            pngname[textlen - 1] = 'g';
-            printf("%s\n", pngname);
-            render.sndfilepath = textbuf;
-            render.pngfilepath = pngname;
-            render_sndfile (&render) ;
-            }
-        }
-    closedir(dp);
-
-
-    // generate urbansound train/test list
-    srand(time(NULL));
-    sprintf(textbuf, "%s/graph/train.list", urbansound_folder);
-    FILE *fp1 = fopen(textbuf, "w+");
-    sprintf(textbuf, "%s/graph/test.list", urbansound_folder);
-    FILE *fp2 = fopen(textbuf, "w+");
-    sprintf(textbuf, "%s/graph/positive", urbansound_folder);
-    dp = opendir(textbuf);
-    while ((files = readdir(dp)) != NULL)
-        {
-        char *filename = files->d_name;
-        if(!strcmp(filename, ".") || !strcmp(filename, ".."))
-            {
-            continue;
-            }
-        textlen = strlen(filename);
-        if (strcmp(".png", filename + textlen - 4) == 0)
-            {
-            sprintf(textbuf, "%s/graph/positive/%s\n", urbansound_folder, filename);
-            if (rand() % 10 == 1)
-                {
-                fputs(textbuf, fp2);
-                }
-            else
-                {
-                fputs(textbuf, fp1);
-                }
-            }
-        }
-    closedir(dp);
-    sprintf(textbuf, "%s/graph/negative", urbansound_folder);
-    dp = opendir(textbuf);
-    while ((files = readdir(dp)) != NULL)
-        {
-        char *filename = files->d_name;
-        if(!strcmp(filename, ".") || !strcmp(filename, ".."))
-            {
-            continue;
-            }
-        textlen = strlen(filename);
-        if (strcmp(".png", filename + textlen - 4) == 0)
-            {
-            sprintf(textbuf, "%s/graph/negative/%s\n", urbansound_folder, filename);
-            if (rand() % 10 == 1)
-                {
-                fputs(textbuf, fp2);
-                }
-            else
-                {
-                fputs(textbuf, fp1);
-                }
-            }
-        }
-
-    closedir(dp);
-    fclose(fp1);
-    fclose(fp2);
-
-
-    sprintf(textbuf, "%s/graph/train.list", urbansound_folder);
-    FILE *fp3 = fopen(textbuf, "a+");
-    sprintf(textbuf, "%s/graph/negative", building_106_kitchen_folder);
-    dp = opendir(textbuf);
-    while ((files = readdir(dp)) != NULL)
-        {
-        char *filename = files->d_name;
-        if(!strcmp(filename, ".") || !strcmp(filename, ".."))
-            {
-            continue;
-            }
-        textlen = strlen(filename);
-        if (strcmp(".png", filename + textlen - 4) == 0)
-            {
-            sprintf(textbuf, "%s/graph/negative/%s\n", building_106_kitchen_folder, filename);
-            fputs(textbuf, fp3);
-            }
-        }
-    closedir(dp);
-    fclose(fp3);
-
-
-    // open ESC-50 dog_bark clip folder, and generate test list
-    sprintf(textbuf, "%s/graph/test.list", esc50_folder);
-    FILE *fp = fopen(textbuf, "w+");
-    sprintf(textbuf, "%s/graph/positive", esc50_folder);
-    dp = opendir(textbuf);
-    while ((files = readdir(dp)) != NULL)
-        {
-        char *filename = files->d_name;
-        if(!strcmp(filename, ".") || !strcmp(filename, ".."))
-            {
-            continue;
-            }
-        textlen = strlen(filename);
-        if (strcmp(".wav", filename + textlen - 4) == 0)
-            {
-            sprintf(textbuf, "%s/graph/positive/%s", esc50_folder, filename);
-            strcpy(pngname, textbuf);
-            textlen = strlen(pngname);
-            pngname[textlen - 3] = 'p';
-            pngname[textlen - 2] = 'n';
-            pngname[textlen - 1] = 'g';
-            printf("%s\n", pngname);
-            render.sndfilepath = textbuf;
-            render.pngfilepath = pngname;
-            render_sndfile (&render) ;
-            fputs(pngname, fp);
-            fputc('\n', fp);
-            }
-        }
-    closedir(dp);
-    sprintf(textbuf, "%s/graph/negative", esc50_folder);
-    dp = opendir(textbuf);
-    while ((files = readdir(dp)) != NULL)
-        {
-        char *filename = files->d_name;
-        if(!strcmp(filename, ".") || !strcmp(filename, ".."))
-            {
-            continue;
-            }
-        textlen = strlen(filename);
-        if (strcmp(".wav", filename + textlen - 4) == 0)
-            {
-            sprintf(textbuf, "%s/graph/negative/%s", esc50_folder, filename);
-            strcpy(pngname, textbuf);
-            textlen = strlen(pngname);
-            pngname[textlen - 3] = 'p';
-            pngname[textlen - 2] = 'n';
-            pngname[textlen - 1] = 'g';
-            printf("%s\n", pngname);
-            render.sndfilepath = textbuf;
-            render.pngfilepath = pngname;
-            render_sndfile (&render) ;
-            fputs(pngname, fp);
-            fputc('\n', fp);
-            }
-        }
-    closedir(dp);
-    fclose(fp);
-
-
     return 0;
 }
-

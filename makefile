@@ -3,7 +3,6 @@ CXXCL += g++
 
 INCLUDES += `pkg-config --cflags sndfile`
 INCLUDES += `pkg-config --cflags fftw3`
-INCLUDES += `pkg-config --cflags opencv`
 INCLUDES += `pkg-config --cflags portaudio-2.0`
 
 CFLAGS += -Ofast
@@ -11,7 +10,6 @@ CXXFLAGS += -Ofast -std=c++11
 
 LDFLAGS += `pkg-config --libs sndfile`
 LDFLAGS += `pkg-config --libs fftw3`
-LDFLAGS += `pkg-config --libs opencv`
 LDFLAGS += `pkg-config --libs portaudio-2.0`
 LDFLAGS += -lcairo
 
